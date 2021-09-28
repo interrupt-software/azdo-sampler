@@ -128,7 +128,7 @@ Each provider has various prerequesite data points that need to be expressed as 
 | **Terraform** | Sets up and configures Terraform Cloud workspaces, and links pipeline deployments to the appropriate workspaces. | TFE_TOKEN |
 | **Random** | Creates random pet names. | none |
 
-In addition, the IaC deployments require the pass-thru of two specific variables that suppor the pipeline tasks. These are required by the work carried during the execution of `terraform plan` and `terraform apply` steps but are not strictly required to build the demo environment.
+In addition, the IaC deployments require the pass-thru of two specific variables that support the pipeline tasks. These are required by the work carried during the execution of `terraform plan` and `terraform apply` steps but are not strictly required to build the demo environment.
 
 - **TF_VAR_arm_client_secret** is used during the `terraform plan` and `terraform apply` steps within a pipeline. While the credentials can be inhereted from the triggering account (human/you) with `az login`, the instrospection of data source `data azurerm_client_config current {}` does not expose the `client secret`.
 
