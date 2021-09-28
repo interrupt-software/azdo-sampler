@@ -43,7 +43,7 @@ stages:
         ARM_TENANT_ID: $(ARM_TENANT_ID)
 
 - stage: storageAccount
-  displayName: 'Terraform Backend'
+  displayName: 'Cloud Backend'
   jobs:
   - job: createContainer
     displayName: 'Create Container'
