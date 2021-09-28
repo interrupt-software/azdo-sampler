@@ -14,6 +14,12 @@ Use `terraform apply` to build the entire environment. This will deploy all reso
 terraform apply -auto-approve
 ```
 
+With a successful run, you should be be able to navigate to the your Azure DevOps organization and see the project instantiated. It should look somewhat like this:
+
+![](/img/azdo-welcome.png)
+
+---
+
 Alternatively, you have the option to walk through each module to create an additive rhythm to the demonstration of these assets. With this approach, create the Azure DevOps Project first.
 
 ```
