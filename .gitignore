@@ -1,0 +1,28 @@
+
+# Terraform state files #
+#########################
+*.tfstate
+*.tfstate.backup
+
+# Terraform provider files #
+###########################
+.terraform
+.terraform.lock.hcl
+
+# Anything with SSH #
+#####################
+.ssh
+
+# MacOS generated files #
+#########################
+.DS_Store
+.DS_Store?
+
+# Any work in progress in these directories #
+#############################################
+wip
+
+# Working variables for wip / development   #
+#############################################
+
+variables.bash

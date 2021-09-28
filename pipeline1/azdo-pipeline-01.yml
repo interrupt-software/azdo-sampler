@@ -1,0 +1,52 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infra/iac01
+
+pool:
+  vmImage: 'Ubuntu-latest'
+
+stages:
+
+- stage: Validate
+  displayName: 'QA Code'
+  jobs:
+  - job: Linter
+    displayName: 'Linter Test'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac01
+          terraform init
+          terraform validate
+
+- stage: Plan
+  jobs:
+  - job: Speculative
+    displayName: 'Run Speculative Plan'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac01
+          terraform init
+          terraform plan
+
+- stage: Apply
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy Infrastructure'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac01
+          terraform init
+          terraform apply -auto-approve

@@ -1,0 +1,248 @@
+trigger: none
+
+pool:
+  vmImage: 'Ubuntu-latest'
+
+stages:
+
+- stage: Validate
+  displayName: 'QA Code'
+  jobs:
+  - job: Linter
+    displayName: 'Linter Test'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac04/production
+          terraform init
+          terraform validate
+
+  - job: Speculative
+    displayName: 'Run Speculative Plan'
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac04/production
+          terraform init
+          terraform plan
+
+- stage: stageWorkspace
+  displayName: 'TFC Workspace'
+  jobs:
+  - job: bootstrap
+    displayName: 'Bootstrap Workspace'
+    steps:
+    - checkout: self
+      persistCredentials: true
+      clean: true
+    - task: Bash@3
+      name: tfcworkspace
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac04/staging
+          filename=".breadcrumb"
+          if [ ! -f "$filename" ]; then
+            cd ../production
+            terraform init
+            terraform apply -auto-approve
+
+            export TF_VAR_tfc_workspace_name=$(terraform output -json | jq -r '.random_pet_name.value')
+            echo "##vso[task.setvariable variable=WORKSPACE_NAME;isOutput=true]$WORKSPACE_NAME"
+            export TF_VAR_tfc_organization=$TFC_ORG
+            export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
+            export TF_VAR_tfc_token=$TFE_TOKEN
+            export TFE_HOSTNAME=app.terraform.io
+
+            cat << EOF > backend.tf
+            terraform {
+              backend "remote" {
+                organization = "$TF_VAR_tfc_organization"
+                workspaces {
+                  name = "$TF_VAR_tfc_workspace_name"
+                }
+              }
+            }
+          EOF
+
+            git config user.email "hashi-bot@hashicorp.com"
+            git config user.name "hashi-bot"
+
+            git checkout -b backend
+            git add backend.tf
+            git commit -m "created backend.tf"
+            git checkout master
+            git merge backend 
+            git push -u origin master
+
+            cd ../staging
+            terraform init
+            terraform apply -auto-approve
+
+            echo "1" > .breadcrumb
+            git checkout -b breadcrumb
+            git add .breadcrumb 
+            git commit -m "created breadcrumb"
+            git checkout master
+            git merge breadcrumb 
+            git push -u origin master
+
+            mkdir $(Build.ArtifactStagingDirectory)/terraform_state
+            mv terraform.tfstate  $(Build.ArtifactStagingDirectory)/terraform_state/.
+          fi
+      env:
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        TFE_TOKEN: $(TFE_TOKEN)
+        TFC_ORG: $(TFC_ORG)
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)/terraform_state
+        artifactName: terraform_state
+      displayName: 'Publish build artifact with terraform.tfstate'
+
+- stage: Apply
+  displayName: 'Build Infrastructure'
+  dependsOn: stageWorkspace
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy Infrastructure'
+    steps:
+    - checkout: self
+      persistCredentials: true
+      clean: true
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          git config user.email "hashi-bot@hashicorp.com"
+          git config user.name "hashi-bot"
+          git checkout master
+
+          cd infra/iac04/production
+          ls -l
+          cat << EOF > .terraformrc
+            credentials "app.terraform.io" {
+              token = "$TFE_TOKEN"
+            }
+          EOF
+
+          export TF_CLI_CONFIG_FILE="$(pwd)/.terraformrc"
+          
+          terraform init
+          terraform apply -auto-approve
+      env:
+        TFE_TOKEN: $(TFE_TOKEN)
+
+- stage: Destroy
+  displayName: 'Destroy Infrastructure'
+  dependsOn: stageWorkspace
+  jobs:
+  - job: Confirmation
+    displayName: 'Approve Destroy'
+    pool: server
+    timeoutInMinutes: 10
+    continueOnError: True
+    steps:
+    - task: ManualValidation@0
+      timeoutInMinutes: 10
+      continueOnError: True
+      inputs:
+        notifyUsers: |
+          'hashi-bot@hashicorp.com'
+        instructions: 'Please validate the stage to destroy your infrastructure. It is done automatically after 10 minutes.'
+        onTimeout: 'resume'
+    
+  - job: DestroyInfrastructure
+    displayName: 'Destroy Deployment'
+    dependsOn: Confirmation
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          git config user.email "hashi-bot@hashicorp.com"
+          git config user.name "hashi-bot"
+          git checkout master
+
+          cd infra/iac04/production
+          ls -l
+          cat << EOF > .terraformrc
+            credentials "app.terraform.io" {
+              token = "$TFE_TOKEN"
+            }
+          EOF
+
+          export TF_CLI_CONFIG_FILE="$(pwd)/.terraformrc"
+          
+          terraform init
+          terraform destroy -auto-approve
+      env:
+        TFE_TOKEN: $(TFE_TOKEN)
+
+- stage: Cleanup
+  displayName: 'Cleanup TFC'
+  dependsOn: 
+  - stageWorkspace
+  - Destroy
+  jobs:
+  - job: DestroyStorageAccount
+    displayName: 'Remove TFC Workspace'
+    variables:
+      WORKSPACE_NAME: $[ stageDependencies.stageWorkspace.bootstrap.outputs[ 'tfcworkspace.WORKSPACE_NAME' ] ]
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+  
+    - checkout: self
+      persistCredentials: true
+      clean: true
+
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac04/staging
+          
+          export TF_VAR_tfc_workspace_name=$WORKSPACE_NAME
+          export TF_VAR_tfc_organization=$TFC_ORG
+          export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
+          export TF_VAR_tfc_token=$TFE_TOKEN
+          export TFE_HOSTNAME=app.terraform.io
+
+          terraform init
+          mv $(Build.ArtifactStagingDirectory)/terraform_state/terraform.tfstate .
+          terraform destroy -auto-approve
+
+          git config user.email "hashi-bot@hashicorp.com"
+          git config user.name "hashi-bot"
+          git checkout master
+          
+          cd $(System.DefaultWorkingDirectory)/infra/iac04
+          rm -f staging/.breadcrumb
+          rm -f production/backend.tf
+
+          git add staging/.breadcrumb
+          git add production/backend.tf
+
+          git commit -a -m "removing breadcrumbs"
+          git push -u origin master
+
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+        TFE_TOKEN: $(TFE_TOKEN)
+        TFC_ORG: $(TFC_ORG)
+

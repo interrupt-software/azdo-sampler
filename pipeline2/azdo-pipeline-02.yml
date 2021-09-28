@@ -1,0 +1,100 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infra/iac02
+
+pool:
+  vmImage: 'Ubuntu-latest'
+
+stages:
+
+- stage: Validate
+  jobs:
+  - job: Linter
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac02
+          terraform init
+          terraform validate
+          
+  - job: Plan
+    dependsOn: Linter
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac02
+          terraform init
+          terraform plan
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+- stage: Apply
+  jobs:
+  - job: Deploy
+    steps:
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac02
+          terraform init
+          terraform apply -auto-approve
+          mkdir $(Build.ArtifactStagingDirectory)/terraform_state
+          mv terraform.tfstate  $(Build.ArtifactStagingDirectory)/terraform_state/.
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: $(Build.ArtifactStagingDirectory)/terraform_state
+        artifactName: terraform_state
+      displayName: 'Publish build artifact with terraform.tfstate'
+
+- stage: Destroy
+  jobs:
+  - job: Confirmation
+    pool: server
+    timeoutInMinutes: 10
+    steps:
+    - task: ManualValidation@0
+      timeoutInMinutes: 10
+      inputs:
+        notifyUsers: |
+          'hashi-bot@hashicorp.com'
+        instructions: 'Please validate the stage to destroy your infrastructure. It is done automatically after 10 minutes.'
+        onTimeout: 'resume'
+
+  - job: Destroy
+    dependsOn: Confirmation
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd infra/iac02
+          terraform init
+          mv $(Build.ArtifactStagingDirectory)/terraform_state/terraform.tfstate .
+          terraform destroy -auto-approve
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
