@@ -24,6 +24,6 @@ resource "azuredevops_build_definition" "build1" {
     repo_type   = "TfsGit"
     repo_id     = var.repo_id
     branch_name = var.branch_name
-    yml_path    = "pipelines/azdo-pipeline-01.yml"
+    yml_path    = "pipeline1/azdo-pipeline-01.yml"
   }
 }

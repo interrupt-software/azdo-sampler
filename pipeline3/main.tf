@@ -34,7 +34,7 @@ resource "azuredevops_build_definition" "build3" {
     repo_type   = "TfsGit"
     repo_id     = var.repo_id
     branch_name = var.branch_name
-    yml_path    = "pipelines/azdo-pipeline-03.yml"
+    yml_path    = "pipeline3/azdo-pipeline-03.yml"
   }
 
   variable {
