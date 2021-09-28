@@ -11,7 +11,8 @@ export ARM_CLIENT_SECRET="1234abcd-56ef-12ab-34cd-567890efabcd"
 export ARM_SUBSCRIPTION_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
 export ARM_TENANT_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
 
-# Environment variables required for Terraform Providers.
+# Environment variables required for Terraform provider for Azure DevOps,
+# and the Terraform provider for Terraform Cloud or Enteprise.
 # Note that the values are exclusive to your Azure DevOps organization
 # and your Terraform Cloud organization.
 #
@@ -22,9 +23,9 @@ export TFE_TOKEN="REPLACE-ME-WITH-YOUR-TFE-TOKEN"
 ### Terraform Variables
 ```bash
 # Terraform variables required to bootstrap the demo.
-# Please note that that tne AZDO project name and the
-# AZDO repo name are arbitrary and must not need to exist
-# already in Azure DevOps.
+# Please note that that the AZDO project name and the
+# AZDO repo name are arbitrary and must not already exist
+# in Azure DevOps. If either exist, the deployment fails.
 #
 # Also, the values TFC org anme and TFC token are exclusive
 # to your Terraform Cloud organization.
