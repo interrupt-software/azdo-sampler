@@ -38,7 +38,29 @@ The following variables are used in various places to build the showcase environ
 
 ### Terraform variables
 
-You can add your defaults to the [variables.tf](variables.tf) file. The alternative is to express these as variables in your working environment. Here is a quick example of that expression:
+You can add your defaults to the [variables.tf](variables.tf) file. The alternative is to express these as variables in your working environment. 
+
+| Variable Name | Description |
+|--------------:|:------------|
+| **azure_devops_project_name** | The intended name for a new Azure DevOps project to create for this exercise. |
+| **azure_devops_repo_name** | The target repo to create and then use to host these assets in Azure DevOps.  |
+| **azure_devops_org_name** | The name of your Azure DevOps organization. |
+| **arm_client_secret** | Used during the `terraform plan` and `terraform apply` steps within a pipeline. |
+| **tfc_org_name** | The name of you Organization in Terraform Cloud. |
+| **tfc_token** | Used by the pipelines when interacting with Terraform Cloud. |
+
+### Environment variables
+
+These are environment variables that should be expressed in the deployment environment. Please note that secrets must not be written permanently in this deployment.
+
+| Variable Name | Description |
+|--------------:|:------------|
+| **AZDO_ORG_SERVICE_URL** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. |
+| **AZDO_PERSONAL_ACCESS_TOKEN** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. This must be treated as a secret.|
+| **TFE_TOKEN** | Used by the pipelines when interacting with Terraform Cloud. This must be treated as a secret.|
+| **ARM_CLIENT_ID<br>ARM_CLIENT_SECRET<br>ARM_SUBSCRIPTION_ID<br>ARM_TENANT_ID** | Account Principal credentials to access Azure Cloud. These must be treated as secrets. |
+
+Here is a quick example of the values expected:
 
 ```bash
 # Environment variables required for Terraform Providers
@@ -56,27 +78,6 @@ export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
 export TF_VAR_tfc_org_name="interrupt-software"
 export TF_VAR_tfc_token=$TFE_TOKEN
 ```
-
-| Variable Name | Description |
-|--------------:|:------------|
-| **TF_VAR_azure_devops_project_name** | The intended name for a new Azure DevOps project to create for this exercise. |
-| **TF_VAR_azure_devops_repo_name** | The target repo to create and then use to host these assets in Azure DevOps.  |
-| **TF_VAR_azure_devops_org_name** | The name of your Azure DevOps organization. |
-| **TF_VAR_arm_client_secret** | Used during the `terraform plan` and `terraform apply` steps within a pipeline. |
-| **TF_VAR_tfc_org_name** | The name of you Organization in Terraform Cloud. |
-| **TF_VAR_tfc_token** | Used by the pipelines when interacting with Terraform Cloud. |
-
-### Environment variables
-
-These are environment variables that should be expressed in the deployment environment. Please note that secrets must not be written permanently in this deployment.
-
-| Variable Name | Description |
-|--------------:|:------------|
-| **AZDO_ORG_SERVICE_URL** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. |
-| **AZDO_PERSONAL_ACCESS_TOKEN** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. This must be treated as a secret.|
-| **TFE_TOKEN** | Used by the pipelines when interacting with Terraform Cloud. This must be treated as a secret.|
-| **ARM_CLIENT_ID<br>ARM_CLIENT_SECRET<br>ARM_SUBSCRIPTION_ID<br>ARM_TENANT_ID** | Account Principal credentials to access Azure Cloud. These must be treated as secrets. |
-
 <br>
 
 # Potential errors
