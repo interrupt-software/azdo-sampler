@@ -23,7 +23,7 @@ variable "branch_name" {}
 
 resource "azuredevops_build_definition" "build3" {
   project_id = var.project_id
-  name       = "03 - Terraform with Azure Backend"
+  name       = "03 - Push Inventory to Cloud Store"
   path       = "\\pipelines"
 
   ci_trigger {

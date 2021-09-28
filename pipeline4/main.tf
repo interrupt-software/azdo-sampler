@@ -35,7 +35,7 @@ variable "tfc_token" {}
 
 resource "azuredevops_build_definition" "build4" {
   project_id = var.project_id
-  name       = "04 - Azure DevOps and Terraform Cloud"
+  name       = "04 - Organize Project with Terraform Cloud"
   path       = "\\pipelines"
 
   ci_trigger {

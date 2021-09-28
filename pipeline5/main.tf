@@ -35,7 +35,7 @@ variable "tfc_token" {}
 
 resource "azuredevops_build_definition" "build5" {
   project_id = var.project_id
-  name       = "05 - Managed Application Service"
+  name       = "05 - Combine Build and Release Pipelines"
   path       = "\\pipelines"
 
   ci_trigger {

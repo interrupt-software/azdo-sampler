@@ -23,7 +23,7 @@ variable "branch_name" {}
 
 resource "azuredevops_build_definition" "build2" {
   project_id = var.project_id
-  name       = "02 - Build Azure Cloud Resource"
+  name       = "02 - Hello Cloud, Let's Connect"
   path       = "\\pipelines"
 
   ci_trigger {
