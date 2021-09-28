@@ -4,7 +4,7 @@ trigger:
     - master
   paths:
     include:
-    - infra/iac01
+    - pipeline1/iac01
 
 pool:
   vmImage: 'Ubuntu-latest'
@@ -21,7 +21,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac01
+          cd pipeline1/iac01
           terraform init
           terraform validate
 
@@ -34,7 +34,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac01
+          cd pipeline1/iac01
           terraform init
           terraform plan
 
@@ -47,6 +47,6 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac01
+          cd pipeline1/iac01
           terraform init
           terraform apply -auto-approve

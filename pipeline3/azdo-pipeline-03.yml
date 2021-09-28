@@ -4,7 +4,7 @@ trigger:
     - master
   paths:
     include:
-    - infra/iac03
+    - pipeline3/iac03
 
 pool:
   vmImage: 'Ubuntu-latest'
@@ -21,7 +21,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac03/staging
+          cd pipeline3/iac03/staging
           terraform init 
           terraform validate 
 
@@ -33,7 +33,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac03/staging
+          cd pipeline3/iac03/staging
           terraform init 
           terraform plan
       env:
@@ -53,7 +53,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac03/staging
+          cd pipeline3/iac03/staging
           terraform init 
           terraform apply -auto-approve
           export RESOURCE_GROUP_NAME=$(terraform output -json | jq -r '.resource_group_name.value')
@@ -88,7 +88,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac03/production
+          cd pipeline3/iac03/production
           sed -i "s/REPLACE_RESOURCE_GROUP_NAME/$(RESOURCE_GROUP_NAME)/g" main.tf
           sed -i "s/REPLACE_STORAGE_ACCOUNT_NAME/$(STORAGE_ACCOUNT_NAME)/g" main.tf
           terraform init
@@ -131,7 +131,7 @@ stages:
         script: |
           env | grep -i group_name
           env | grep -i account_name
-          cd infra/iac03/production
+          cd pipeline3/iac03/production
           sed -i "s/REPLACE_RESOURCE_GROUP_NAME/$(RESOURCE_GROUP_NAME)/g" main.tf
           sed -i "s/REPLACE_STORAGE_ACCOUNT_NAME/$(STORAGE_ACCOUNT_NAME)/g" main.tf
           terraform init
@@ -161,7 +161,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac03/staging
+          cd pipeline3/iac03/staging
           terraform init
           mv $(Build.ArtifactStagingDirectory)/terraform_state/terraform.tfstate .
           terraform destroy -auto-approve

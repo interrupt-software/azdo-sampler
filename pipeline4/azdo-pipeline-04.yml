@@ -15,7 +15,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac04/production
+          cd pipeline4/iac04/production
           terraform init
           terraform validate
 
@@ -26,7 +26,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac04/production
+          cd pipeline4/iac04/production
           terraform init
           terraform plan
 
@@ -44,7 +44,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac04/staging
+          cd pipeline4/iac04/staging
           filename=".breadcrumb"
           if [ ! -f "$filename" ]; then
             cd ../production
@@ -126,7 +126,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
 
-          cd infra/iac04/production
+          cd pipeline4/iac04/production
           ls -l
           cat << EOF > .terraformrc
             credentials "app.terraform.io" {
@@ -172,7 +172,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
 
-          cd infra/iac04/production
+          cd pipeline4/iac04/production
           ls -l
           cat << EOF > .terraformrc
             credentials "app.terraform.io" {
@@ -212,7 +212,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac04/staging
+          cd pipeline4/iac04/staging
           
           export TF_VAR_tfc_workspace_name=$WORKSPACE_NAME
           export TF_VAR_tfc_organization=$TFC_ORG
@@ -228,7 +228,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
           
-          cd $(System.DefaultWorkingDirectory)/infra/iac04
+          cd $(System.DefaultWorkingDirectory)/pipeline4/iac04
           rm -f staging/.breadcrumb
           rm -f production/backend.tf
 

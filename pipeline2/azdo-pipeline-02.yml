@@ -4,7 +4,7 @@ trigger:
     - master
   paths:
     include:
-    - infra/iac02
+    - pipeline2/iac02
 
 pool:
   vmImage: 'Ubuntu-latest'
@@ -19,7 +19,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac02
+          cd pipeline2/iac02
           terraform init
           terraform validate
           
@@ -30,7 +30,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac02
+          cd pipeline2/iac02
           terraform init
           terraform plan
       env:
@@ -47,7 +47,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac02
+          cd pipeline2/iac02
           terraform init
           terraform apply -auto-approve
           mkdir $(Build.ArtifactStagingDirectory)/terraform_state
@@ -89,7 +89,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac02
+          cd pipeline2/iac02
           terraform init
           mv $(Build.ArtifactStagingDirectory)/terraform_state/terraform.tfstate .
           terraform destroy -auto-approve

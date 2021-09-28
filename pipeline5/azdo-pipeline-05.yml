@@ -15,7 +15,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac05/production
+          cd pipeline5/iac05/production
           filename="backend.tf"
           if [ ! -f "$filename" ]; then
             terraform init
@@ -30,7 +30,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac05/production
+          cd pipeline5/iac05/production
           filename="backend.tf"
           if [ ! -f "$filename" ]; then
             export TF_VAR_azurerm_resource_group_name="test"
@@ -58,7 +58,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac05/staging
+          cd pipeline5/iac05/staging
           filename=".breadcrumb"
           if [ ! -f "$filename" ]; then
             cd ../templates
@@ -144,7 +144,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
 
-          cd infra/iac05/production
+          cd pipeline5/iac05/production
           ls -l
           cat << EOF > .terraformrc
             credentials "app.terraform.io" {
@@ -177,7 +177,7 @@ stages:
           azureSubscription: 'HashiCorp SE AzureRM'
           appType: 'webAppLinux'
           WebAppName: '$(WORKSPACE_NAME)-nodejs'
-          packageForLinux: '$(System.DefaultWorkingDirectory)/infra/iac05/app/*.zip'
+          packageForLinux: '$(System.DefaultWorkingDirectory)/pipeline5/iac05/app/*.zip'
           RuntimeStack: 'NODE|14-lts'
           StartupCommand: 'npm install express; npm install -d; node app'
         env:
@@ -214,7 +214,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
 
-          cd infra/iac05/production
+          cd pipeline5/iac05/production
           ls -l
           cat << EOF > .terraformrc
             credentials "app.terraform.io" {
@@ -254,7 +254,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          cd infra/iac05/staging
+          cd pipeline5/iac05/staging
           
           export TF_VAR_tfc_workspace_name=$(WORKSPACE_NAME)
           export TF_VAR_tfc_organization=$TFC_ORG
@@ -271,7 +271,7 @@ stages:
           git config user.name "hashi-bot"
           git checkout master
           
-          cd $(System.DefaultWorkingDirectory)/infra/iac05
+          cd $(System.DefaultWorkingDirectory)/pipeline5/iac05
           rm -f staging/.breadcrumb
           rm -f production/backend.tf
 
