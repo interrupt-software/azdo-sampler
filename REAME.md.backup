@@ -69,6 +69,34 @@ terraform apply -target module.pipeline1
 
 The code in [pipeline1/main.tf](pipeline1/main.tf) creates an Azure DevOps Pipeline that references the [pipelines1/azdo-pipeline-01.yml](pipeline1/azdo-pipeline-01.yml) resouce in this repo.
 
+## About the required variables
+
+The following variables are used in various places to build the showcase environment. 
+
+### Environment variables
+
+These are environment variables that should be expressed in the deployment environment. Please note that secrets must not be written permanently in this deployment.
+
+| Variable Name | Description |
+|--------------:|:------------|
+| **ARM_CLIENT_ID<br>ARM_CLIENT_SECRET<br>ARM_SUBSCRIPTION_ID<br>ARM_TENANT_ID** | Account Principal credentials to access Azure Cloud. These must be treated as secrets. |
+| **AZDO_ORG_SERVICE_URL** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. |
+| **AZDO_PERSONAL_ACCESS_TOKEN** | Used by the Terraform Provider for Azure DevOps when creating assets for this exercise. This must be treated as a secret.|
+| **TFE_TOKEN** | Used by the pipelines when interacting with Terraform Cloud. This must be treated as a secret.|
+
+### Terraform variables
+
+You can add your defaults to the [variables.tf](variables.tf) file. The alternative is to express these as variables in your working environment. 
+
+| Variable Name | Description |
+|--------------:|:------------|
+| **azure_devops_project_name** | The intended name for a new Azure DevOps project to create for this exercise. |
+| **azure_devops_repo_name** | The target repo to create and then use to host these assets in Azure DevOps.  |
+| **azure_devops_org_name** | The name of your Azure DevOps organization. |
+| **arm_client_secret** | Used during the `terraform plan` and `terraform apply` steps within a pipeline. |
+| **tfc_org_name** | The name of you Organization in Terraform Cloud. |
+| **tfc_token** | Used by the pipelines when interacting with Terraform Cloud. |
+
 # Potential errors
 
 There is a potential error during the creation of the pipelines that may occur sporadically. [AzureDevOps Guide](https://www.azuredevopsguide.com/tf400898-an-internal-error-occurred/) writes that the error `TF400898: An Internal Error Occurred` mostly occurs when you are trying to access information from Azure DevOps via some REST API calls. According to Microsoft this is mostly a timeout issue from Azure DevOps. If you try it again after sometime this error seems to goes away.
