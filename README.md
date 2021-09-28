@@ -14,12 +14,9 @@ Use `terraform apply` to build the entire environment. This will deploy all reso
 terraform apply -auto-approve
 ```
 
-With a successful run, you should be be able to navigate to the your Azure DevOps organization and see the project instantiated. It should look somewhat like this:
-
-![](/img/azdo-welcome.png)
+With a successful run, you should be be able to navigate to the your Azure DevOps organization and see the project instantiated. It should look somewhat like this: ![](/img/azdo-welcome.png)
 
 ---
-
 Alternatively, you have the option to walk through each module to create an additive rhythm to the demonstration of these assets. With this approach, create the Azure DevOps Project first.
 
 ```
@@ -32,7 +29,7 @@ Once you are familiar with the pipelines, you can decide which example to run. F
 terraform apply -target module.pipeline1
 ```
 
-The code in [pipeline1/main.tf](pipeline1/main.tf) creates an Azure DevOps Pipeline that references the [../pipelines/azdo-pipeline-01.yml](../pipelines/azdo-pipeline-01.yml) resouce in this repo.
+The code in [pipeline1/main.tf](pipeline1/main.tf) creates an Azure DevOps Pipeline that references the [pipelines1/azdo-pipeline-01.yml](pipeline1/azdo-pipeline-01.yml) resouce in this repo.
 
 
 ## Required variables
@@ -41,7 +38,24 @@ The following variables are used in various places to build the showcase environ
 
 ### Terraform variables
 
-You can add your defaults to the [variables.tf](variables.tf) file. The alternative is to express these in your working environment.
+You can add your defaults to the [variables.tf](variables.tf) file. The alternative is to express these as variables in your working environment. Here is a quick example of that expression:
+
+```bash
+# Environment variables required for Terraform Providers
+#
+export AZDO_ORG_SERVICE_URL=https://dev.azure.com/hashicat-azdo
+export AZDO_PERSONAL_ACCESS_TOKEN="REPLACE-ME-WITH-YOUR-AZDO-PAT"
+export TFE_TOKEN="REPLACE-ME-WITH-YOUR-TFE-TOKEN"
+
+# Terraform variables
+#
+export TF_VAR_azure_devops_project_name="azdo-primer-101"
+export TF_VAR_azure_devops_repo_name="pipeline-starter"
+export TF_VAR_azure_devops_org_name="hashicat-azdo"
+export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
+export TF_VAR_tfc_org_name="interrupt-software"
+export TF_VAR_tfc_token=$TFE_TOKEN
+```
 
 | Variable Name | Description |
 |--------------:|:------------|
