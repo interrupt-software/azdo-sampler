@@ -60,7 +60,7 @@ These are environment variables that should be expressed in the deployment envir
 | **TFE_TOKEN** | Used by the pipelines when interacting with Terraform Cloud. This must be treated as a secret.|
 | **ARM_CLIENT_ID<br>ARM_CLIENT_SECRET<br>ARM_SUBSCRIPTION_ID<br>ARM_TENANT_ID** | Account Principal credentials to access Azure Cloud. These must be treated as secrets. |
 
---
+---
 
 Here is a quick example of the values expected:
 ```bash
@@ -79,7 +79,6 @@ export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
 export TF_VAR_tfc_org_name="interrupt-software"
 export TF_VAR_tfc_token=$TFE_TOKEN
 ```
-<br>
 
 # Potential errors
 
