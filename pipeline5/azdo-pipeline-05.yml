@@ -92,9 +92,9 @@ stages:
             git checkout -b backend
             git add backend.tf
             git commit -m "created backend.tf"
-            git checkout master
+            git checkout main
             git merge backend 
-            git push -u origin master
+            git push -u origin main
 
             cd ../staging
 
@@ -105,9 +105,9 @@ stages:
             git checkout -b breadcrumb
             git add .breadcrumb 
             git commit -m "created breadcrumb"
-            git checkout master
+            git checkout main
             git merge breadcrumb 
-            git push -u origin master
+            git push -u origin main
 
             mkdir $(Build.ArtifactStagingDirectory)/terraform_state
             mv terraform.tfstate  $(Build.ArtifactStagingDirectory)/terraform_state/.
@@ -142,7 +142,7 @@ stages:
         script: |
           git config user.email "hashi-bot@hashicorp.com"
           git config user.name "hashi-bot"
-          git checkout master
+          git checkout main
 
           cd pipeline5/iac05/production
           ls -l
@@ -212,7 +212,7 @@ stages:
         script: |
           git config user.email "hashi-bot@hashicorp.com"
           git config user.name "hashi-bot"
-          git checkout master
+          git checkout main
 
           cd pipeline5/iac05/production
           ls -l
@@ -269,7 +269,7 @@ stages:
 
           git config user.email "hashi-bot@hashicorp.com"
           git config user.name "hashi-bot"
-          git checkout master
+          git checkout main
           
           cd $(System.DefaultWorkingDirectory)/pipeline5/iac05
           rm -f staging/.breadcrumb
@@ -279,7 +279,7 @@ stages:
           git add production/backend.tf
 
           git commit -a -m "removing breadcrumbs"
-          git push -u origin master
+          git push -u origin main
 
       env:
         ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
