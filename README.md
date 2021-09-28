@@ -1,6 +1,30 @@
 # Quick Start
 
-Declare the required variables. Fill in the default values for the [Terraform variables](#terraform-variables) in the the [variables.tf](variables.tf) file, and declare the necesary [environment variables](#environment-variables).
+Declare the required variables. Fill in the default values for the [Terraform variables](#terraform-variables) in the the [variables.tf](variables.tf) file, and declare the necesary [environment variables](#environment-variables). Here are examples of the values expected.
+```bash
+# Environment variables required for Terraform Providers.
+# Note that the values are exclusive to your Azure DevOps organization
+# and your Terraform Cloud organization.
+#
+export AZDO_ORG_SERVICE_URL=https://dev.azure.com/hashicat-azdo
+export AZDO_PERSONAL_ACCESS_TOKEN="REPLACE-ME-WITH-YOUR-AZDO-PAT"
+export TFE_TOKEN="REPLACE-ME-WITH-YOUR-TFE-TOKEN"
+
+# Terraform variables required to bootstrap the demo.
+# Please note that that tne AZDO project name and the
+# AZDO repo name are arbitrary and must not need to exist
+# already in Azure DevOps.
+#
+# Also, the values TFC org anme and TFC token are exclusive
+# to your Terraform Cloud organization.
+#
+export TF_VAR_azure_devops_project_name="azdo-primer-101"
+export TF_VAR_azure_devops_repo_name="pipeline-starter"
+export TF_VAR_azure_devops_org_name="hashicat-azdo"
+export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
+export TF_VAR_tfc_org_name="interrupt-software"
+export TF_VAR_tfc_token=$TFE_TOKEN
+```
 
 Use the following to stage the working environment.
 
@@ -60,25 +84,6 @@ These are environment variables that should be expressed in the deployment envir
 | **TFE_TOKEN** | Used by the pipelines when interacting with Terraform Cloud. This must be treated as a secret.|
 | **ARM_CLIENT_ID<br>ARM_CLIENT_SECRET<br>ARM_SUBSCRIPTION_ID<br>ARM_TENANT_ID** | Account Principal credentials to access Azure Cloud. These must be treated as secrets. |
 
----
-
-Here is a quick example of the values expected:
-```bash
-# Environment variables required for Terraform Providers
-#
-export AZDO_ORG_SERVICE_URL=https://dev.azure.com/hashicat-azdo
-export AZDO_PERSONAL_ACCESS_TOKEN="REPLACE-ME-WITH-YOUR-AZDO-PAT"
-export TFE_TOKEN="REPLACE-ME-WITH-YOUR-TFE-TOKEN"
-
-# Terraform variables
-#
-export TF_VAR_azure_devops_project_name="azdo-primer-101"
-export TF_VAR_azure_devops_repo_name="pipeline-starter"
-export TF_VAR_azure_devops_org_name="hashicat-azdo"
-export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
-export TF_VAR_tfc_org_name="interrupt-software"
-export TF_VAR_tfc_token=$TFE_TOKEN
-```
 
 # Potential errors
 
