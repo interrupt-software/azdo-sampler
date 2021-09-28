@@ -2,6 +2,13 @@
 
 Declare the required variables. Fill in the default values for the [Terraform variables](#terraform-variables) in the the [variables.tf](variables.tf) file, and declare the necesary [environment variables](#environment-variables). Here are examples of the values expected.
 ```bash
+# Terraform provider for Azure Resource Manager requirements.
+# 
+export ARM_CLIENT_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
+export ARM_CLIENT_SECRET="1234abcd-56ef-12ab-34cd-567890efabcd"
+export ARM_SUBSCRIPTION_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
+export ARM_TENANT_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
+
 # Environment variables required for Terraform Providers.
 # Note that the values are exclusive to your Azure DevOps organization
 # and your Terraform Cloud organization.
