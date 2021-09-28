@@ -1,6 +1,8 @@
 # Quick Start
 
-Declare the required variables. Fill in the default values for the [Terraform variables](#terraform-variables) in the the [variables.tf](variables.tf) file, and declare the necesary [environment variables](#environment-variables). Here are examples of the values expected.
+Prepare the required variables. Declare the necesary [environment variables](#environment-variables). Fill in the default values for the [Terraform variables](#terraform-variables) in the the [variables.tf](variables.tf) file, or declare Terraform variables. Here are examples of the values expected:
+
+### Environment Variables
 ```bash
 # Terraform provider for Azure Resource Manager requirements.
 # 
@@ -16,7 +18,9 @@ export ARM_TENANT_ID="1234abcd-56ef-12ab-34cd-567890efabcd"
 export AZDO_ORG_SERVICE_URL=https://dev.azure.com/hashicat-azdo
 export AZDO_PERSONAL_ACCESS_TOKEN="REPLACE-ME-WITH-YOUR-AZDO-PAT"
 export TFE_TOKEN="REPLACE-ME-WITH-YOUR-TFE-TOKEN"
-
+```
+### Terraform Variables
+```bash
 # Terraform variables required to bootstrap the demo.
 # Please note that that tne AZDO project name and the
 # AZDO repo name are arbitrary and must not need to exist
