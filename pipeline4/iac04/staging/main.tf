@@ -13,6 +13,7 @@ terraform {
 variable "tfc_organization" {}
 variable "tfc_workspace_name" {}
 variable "arm_client_secret" {}
+variable "arm_resource_group_name" {}
 
 provider "azurerm" {
   features {}
@@ -59,4 +60,12 @@ resource "tfe_variable" "arm_tenant_id" {
   value        = data.azurerm_client_config.current.tenant_id
   category     = "env"
   sensitive    = true
+}
+
+resource "tfe_variable" "azurerm_resource_group_name" {
+  workspace_id = tfe_workspace.test.id
+  key          = "azurerm_resource_group_name"
+  value        = var.arm_resource_group_name
+  category     = "terraform"
+  sensitive    = false
 }

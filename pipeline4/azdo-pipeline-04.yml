@@ -16,8 +16,11 @@ stages:
         targetType: 'inline'
         script: |
           cd pipeline4/iac04/production
-          terraform init
-          terraform validate
+          filename="backend.tf"
+          if [ ! -f "$filename" ]; then
+            terraform init
+            terraform validate
+          fi
 
   - job: Speculative
     displayName: 'Run Speculative Plan'
@@ -27,8 +30,17 @@ stages:
         targetType: 'inline'
         script: |
           cd pipeline4/iac04/production
-          terraform init
-          terraform plan
+          filename="backend.tf"
+          if [ ! -f "$filename" ]; then
+            export TF_VAR_azurerm_resource_group_name="test"
+            terraform init
+            terraform plan
+          fi
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
 
 - stage: stageWorkspace
   displayName: 'TFC Workspace'
@@ -47,16 +59,19 @@ stages:
           cd pipeline4/iac04/staging
           filename=".breadcrumb"
           if [ ! -f "$filename" ]; then
-            cd ../production
+            cd ../templates
             terraform init
             terraform apply -auto-approve
 
             export TF_VAR_tfc_workspace_name=$(terraform output -json | jq -r '.random_pet_name.value')
-            echo "##vso[task.setvariable variable=WORKSPACE_NAME;isOutput=true]$WORKSPACE_NAME"
+            export TF_VAR_arm_resource_group_name=$TF_VAR_tfc_workspace_name
+            echo "##vso[task.setvariable variable=WORKSPACE_NAME;isOutput=true]$TF_VAR_tfc_workspace_name"
             export TF_VAR_tfc_organization=$TFC_ORG
             export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
             export TF_VAR_tfc_token=$TFE_TOKEN
             export TFE_HOSTNAME=app.terraform.io
+
+            cd ../production
 
             cat << EOF > backend.tf
             terraform {
@@ -214,11 +229,12 @@ stages:
         script: |
           cd pipeline4/iac04/staging
           
-          export TF_VAR_tfc_workspace_name=$WORKSPACE_NAME
+          export TF_VAR_tfc_workspace_name=$(WORKSPACE_NAME)
           export TF_VAR_tfc_organization=$TFC_ORG
           export TF_VAR_arm_client_secret=$ARM_CLIENT_SECRET
           export TF_VAR_tfc_token=$TFE_TOKEN
           export TFE_HOSTNAME=app.terraform.io
+          export TF_VAR_arm_resource_group_name=$(WORKSPACE_NAME)
 
           terraform init
           mv $(Build.ArtifactStagingDirectory)/terraform_state/terraform.tfstate .
