@@ -240,7 +240,7 @@ stages:
     variables:
       WORKSPACE_NAME: $[ stageDependencies.stageWorkspace.bootstrap.outputs[ 'tfcworkspace.WORKSPACE_NAME' ] ]
     steps:
-    - task: DownloadBuildArtifacts@1
+    - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
