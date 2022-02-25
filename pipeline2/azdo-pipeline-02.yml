@@ -83,7 +83,7 @@ stages:
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
-        downloadType: 'single'
+        downloadType: 'specific'
         downloadPath: '$(Build.ArtifactStagingDirectory)'
     - task: Bash@3
       inputs:
