@@ -25,12 +25,12 @@ resource "azurerm_resource_group" "ado-sample" {
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  name                     = lower("tfstate${formatdate("DDMMMYYYYHHmmZZZ", timestamp())}")
-  resource_group_name      = azurerm_resource_group.ado-sample.name
-  location                 = azurerm_resource_group.ado-sample.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  allow_blob_public_access = true
+  name                            = lower("tfstate${formatdate("DDMMMYYYYHHmmZZZ", timestamp())}")
+  resource_group_name             = azurerm_resource_group.ado-sample.name
+  location                        = azurerm_resource_group.ado-sample.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  allow_nested_items_to_be_public = true
 
   blob_properties {
     versioning_enabled = true
