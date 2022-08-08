@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "main" {
   tags     = var.tags
 }
 
-resource "azurerm_app_service_plan" "main" {
+resource "azurerm_service_plan" "main" {
   name                = "${var.azurerm_resource_group_name}-nodejs"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
@@ -35,7 +35,7 @@ resource "azurerm_app_service" "main" {
   name                = "${var.azurerm_resource_group_name}-nodejs"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  app_service_plan_id = azurerm_app_service_plan.main.id
+  app_service_plan_id = azurerm_service_plan.main.id
 
   site_config {
     linux_fx_version = "NODE|14-lts"
@@ -43,7 +43,7 @@ resource "azurerm_app_service" "main" {
 }
 
 output "app_service_name" {
-  value = "${azurerm_app_service.main.name}"
+  value = azurerm_app_service.main.name
 }
 
 output "app_service_default_hostname" {
